@@ -79,6 +79,7 @@ func remove_cell(pos: Vector2):
 
 func start_stop():
 	if $Timer.is_stopped() and cells.size() > 0:
+		$Timer.wait_time = sim_speed
 		$Timer.start()
 		print("Timer started!")
 	else:
