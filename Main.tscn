@@ -7,13 +7,12 @@
 script = ExtResource( 1 )
 
 [node name="Cell" type="Sprite" parent="."]
-position = Vector2( -45, -32 )
+position = Vector2( 666.398, -45.4543 )
 texture = ExtResource( 2 )
 
 [node name="Timer" type="Timer" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2( 510, 300 )
 current = true
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

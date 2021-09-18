@@ -35,25 +35,37 @@ func move_camera(dv: Vector2):
    $Camera2D.offset -= dv
 
 func place_cell(pos: Vector2):
-	var key = get_grid_pos(pos)
-	if not cells.has(key):
-		var cell = $Cell.duplicate()
-		cell.position = key * 32
-		add_child(cell)
-		cell.show()
-		cells[key] = cell
-		grids[1][key] = true
+	# Convert mouse position to camera view coordinates
+	pos = mouse_pos_to_cam_pos(pos)
+	var grid_pos = get_grid_pos(pos)
+	if not cells.has(grid_pos):
+		add_new_cell(grid_pos)
+
+func mouse_pos_to_cam_pos(pos):
+	return pos + $Camera2D.offset / $Camera2D.zoom - get_viewport_rect().size / 2
+
+func add_new_cell(grid_pos):
+	var pos = grid_pos * 32.0
+	var cell = $Cell.duplicate()
+	cell.position = pos
+	add_child(cell)
+	cell.show()
+	cells[grid_pos] = cell
+	grids[1][grid_pos] = true
+	print("Cell placed!")
 
 func get_grid_pos(pos: Vector2) -> Vector2:
-	return pos.snapped(Vector2(32, 32)) / 32
+	var pixels = 32.0 / $Camera2D.zoom.x
+	return pos.snapped(Vector2(pixels, pixels)) / pixels
 
 func remove_cell(pos: Vector2):
-	var key = get_grid_pos(pos)
+	var key = get_grid_pos(mouse_pos_to_cam_pos(pos))
 	# Check if user clicked in occupied position
 	if cells.has(key):
 		cells[key].queue_free()
 		cells.erase(key)
 		grids[1].erase(key)
+		print("Cell removed!")
 
 func start_stop():
 	if $Timer.is_stopped() and cells.size() > 0:
@@ -67,6 +79,7 @@ func reset():
 		cells[key].queue_free()
 	grids[1].clear()
 	cells.clear()
+	print("Board reset!")
 
 
 func _on_Timer_timeout():
