@@ -2,6 +2,9 @@ extends Node2D
 
 const ZOOM_STEP = 0.1
 const CELL = preload("res://Cell.tscn")
+export var color_alive = Color.aqua
+export var color_dead = Color.gray
+export var sim_speed = 1
 
 var cells = {}
 # Define an array of 2 dictionaries
@@ -25,6 +28,12 @@ func _unhandled_input(event):
 		start_stop()
 	if event.is_action_pressed("ui_reset"):
 		reset()
+	if event.is_action_pressed("ui_page_up"):
+		sim_speed -= 0.1
+		$Timer.wait_time = sim_speed
+	if event.is_action_pressed("ui_page_down"):
+		sim_speed += 0.1
+		$Timer.wait_time = sim_speed
 
 var zoom = 1.0
 
@@ -119,7 +128,7 @@ func get_num_live_cells(pos: Vector2, first_pass = true):
 
 func update_cells():
 	for key in cells.keys():
-		cells[key].modulate = Color.aqua if grids[1][key] else Color.gray
+		cells[key].modulate = color_alive if grids[1][key] else color_dead
 
 func add_new_cells():
 	for pos in to_check:
