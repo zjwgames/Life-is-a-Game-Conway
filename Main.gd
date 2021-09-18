@@ -1,6 +1,7 @@
 extends Node2D
 
 const ZOOM_STEP = 0.1
+const CELL = preload("res://Cell.tscn")
 
 var cells = {}
 # Define an array of 2 dictionaries
@@ -46,7 +47,7 @@ func mouse_pos_to_cam_pos(pos):
 
 func add_new_cell(grid_pos):
 	var pos = grid_pos * 32.0
-	var cell = $Cell.duplicate()
+	var cell = CELL.instance()
 	cell.position = pos
 	add_child(cell)
 	cell.show()
