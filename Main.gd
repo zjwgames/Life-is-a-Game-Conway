@@ -70,8 +70,10 @@ func remove_cell(pos: Vector2):
 func start_stop():
 	if $Timer.is_stopped() and cells.size() > 0:
 		$Timer.start()
+		print("Timer started!")
 	else:
 		$Timer.stop()
+		print("Timer stopped!")
 
 func reset():
 	$Timer.stop()
@@ -86,3 +88,41 @@ func _on_Timer_timeout():
 	grids.invert()
 	grids[1].clear()
 	# Process the game rules
+	regenerate()
+	add_new_cells()
+	update_cells()
+
+func regenerate():
+	for key in cells.keys():
+		var n = get_num_live_cells(key)
+		if grids[0][key]: # Alive
+			grids[1][key] = (n == 2 or n == 3)
+		else: # Dead
+			grids[1][key] = (n == 3)
+
+var to_check = []
+
+func get_num_live_cells(pos: Vector2, first_pass = true):
+	var num_live_cells = 0
+	for y in [-1, 0, 1]:
+		for x in [-1, 0, 1]:
+			if x != 0 or y != 0:
+				var new_pos = pos + Vector2(x, y)
+				if grids[0].has(new_pos):
+					if grids[0][new_pos]: # If alive
+						num_live_cells += 1
+				else:
+					if first_pass:
+						to_check.append(new_pos)
+	return num_live_cells
+
+func update_cells():
+	for key in cells.keys():
+		cells[key].modulate = Color.aqua if grids[1][key] else Color.gray
+
+func add_new_cells():
+	for pos in to_check:
+		var n = get_num_live_cells(pos, false)
+		if n == 3 and not grids[1].has(pos):
+			add_new_cell(pos)
+	to_check = []
